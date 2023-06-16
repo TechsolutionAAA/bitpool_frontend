@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { IState } from "@/store";
 import USDT from "@/public/usdt.png";
@@ -9,16 +9,31 @@ import { Check } from "@/public/icons";
 import Select from "../Select/challengeSelect";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
+import { SERVER_URI } from "@/config";
 import * as yup from "yup";
 import Input from "../Input";
 import Button, { butonTypes, variantTypes } from "../Button";
+import { notification } from "antd";
+import { poolchallengeActions } from "../../store/poolchallenge";
 
 const openchallenge = (props: { close: (value: string) => void }) => {
   const { currentUser } = useSelector((state: IState) => state.auth);
+  const dispatch = useDispatch();
   const [remember, setRemember] = useState(false);
   const [coin, setCoin] = useState("BITP");
   const [diff, setDiff] = useState("Hard");
   const icon = useRef<object>({});
+
+  const getPoolChallengeData = () => {
+    axios.get(`${SERVER_URI}/pool-game/index`).then((res) => {
+      dispatch(poolchallengeActions.setModalData(res.data.models));
+    });
+  };
+
+  useEffect(() => {
+    getPoolChallengeData();
+  }, []);
 
   const schema = yup.object().shape({
     amount: yup.string().required("Amount is required"),
@@ -32,12 +47,46 @@ const openchallenge = (props: { close: (value: string) => void }) => {
   } = useForm<any>({ resolver: yupResolver(schema) });
 
   const onSubmit = (data: any) => {
-    if (data.amount === 0) {
-      alert("again");
+    if (!currentUser) {
+      notification.warning({
+        message: "Warning!",
+        description: "Please login!",
+      });
       return;
     } else {
       reset();
-      props.close("error");
+      const paramData = {
+        amount: data.amount,
+        opponent_username: "",
+        coin_type:
+          coin === "BITP" ? 1 : coin === "BUSD" ? 2 : coin === "USDT" ? 3 : 4,
+        create_userid: currentUser.id,
+      };
+
+      axios
+        .post(`${SERVER_URI}/pool-game/opensave`, paramData)
+        .then((res) => {
+          if (res.data.success) {
+            getPoolChallengeData();
+            notification.success({
+              message: "Success!",
+              description: res.data.message,
+            });
+          } else {
+            notification.warning({
+              message: "Error!",
+              description: res.data.message,
+            });
+          }
+        })
+        .catch((err) => {
+          notification.warning({
+            message: "Error!",
+            description: err,
+          });
+        });
+
+      props.close("success");
     }
   };
 
@@ -98,7 +147,7 @@ const openchallenge = (props: { close: (value: string) => void }) => {
           label="Currency"
         />
         <Select
-          key={0}
+          key={1}
           name={diff}
           icon=""
           handleChange={(value) => setDiff(value)}

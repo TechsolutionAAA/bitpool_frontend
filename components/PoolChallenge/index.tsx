@@ -84,8 +84,9 @@ const PoolChallenge = (prop: any) => {
         <div className={`flex flex-col items-center hide`}>
           <div className="text-primary-450 text-sm font-bold">Opponent</div>
           <div className=" text-white text-base font-semibold">
-            {"@"}
-            {prop.quest.opponent_userid.username}
+            {prop.quest.gametype
+              ? "@" + prop.quest.opponent_userid.username
+              : "NO USER"}
           </div>
         </div>
         <div className={`flex flex-col items-center hide`}>
@@ -100,16 +101,33 @@ const PoolChallenge = (prop: any) => {
         </div>
         {prop.quest.status_num <= 1 ? (
           <>
-            <Button
-              variant={variantTypes.secondary}
-              textVol={volumeTypes.sm}
-              onClick={() => startGame(prop.quest._id)}
-              px="xl:px-20 px-5"
-              text="ACCEPT"
-            />
-            <div className="cursor-pointer xl:hidden self-center">
-              <ArrowDown />
-            </div>
+            {prop.quest.gametype ? (
+              <>
+                <Button
+                  variant={variantTypes.secondary}
+                  textVol={volumeTypes.sm}
+                  onClick={() => startGame(prop.quest._id)}
+                  px="xl:px-20 px-5"
+                  text="ACCEPT"
+                />
+                <div className="cursor-pointer xl:hidden self-center">
+                  <ArrowDown />
+                </div>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant={variantTypes.primary}
+                  textVol={volumeTypes.sm}
+                  onClick={() => startGame(prop.quest._id)}
+                  px="xl:px-20 px-5"
+                  text="ACCEPT"
+                />
+                <div className="cursor-pointer xl:hidden self-center">
+                  <ArrowDown />
+                </div>
+              </>
+            )}
           </>
         ) : prop.quest.status_num == 2 ? (
           <>

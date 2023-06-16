@@ -110,6 +110,7 @@ export default function GameComponent() {
     </div>
   );
 }
+
 function getFromLocalStorage(arg0: string) {
   throw new Error("Function not implemented.");
 }
