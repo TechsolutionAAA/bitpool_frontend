@@ -100,7 +100,8 @@ export default function GameComponent() {
           <iframe
             // src={`https://portal.bitpool.gg/?c=${cid}&u=${uid}`}
             // src={`https://pool-web-game.onrender.com/?c=${cid}&u=${uid}`}
-            src={`http://192.168.112.89:9001`}
+            // src={`http://192.168.112.89:9001`}
+            src="https://bitpool-gameserver.onrender.com"
             id="iframe_poolgame"
             className="w-full absolute top-0 left-0 h-full"
           ></iframe>
