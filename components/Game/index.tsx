@@ -34,6 +34,7 @@ export default function GameComponent() {
       window.onmessage = (e) => {
         const elementdata: any = document.querySelector("#iframe_poolgame");
         if (e.data.name === "gameconnected") {
+          console.log("Hi");
           const msg_data = {
             name: "start_game_first",
             currentUser: currentUser,
