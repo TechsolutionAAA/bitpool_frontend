@@ -30,35 +30,32 @@ export default function GameComponent() {
   };
 
   useEffect(() => {
-    return () => {
-      window.onmessage = (e) => {
-        const elementdata: any = document.querySelector("#iframe_poolgame");
-        if (e.data.name === "gameconnected") {
-          console.log("Hi");
-          const msg_data = {
-            name: "start_game_first",
-            currentUser: currentUser,
-            cid: window.localStorage.getItem("cid"),
-          };
-          elementdata.contentWindow.postMessage(msg_data, "*");
-        } else if (e.data.name === "gameendstatus") {
-          setTimeout(() => {
-            router.push("/challenges");
-          }, 5000);
-          axios
-            .post(`${SERVER_URI}/pool-game/end`, e.data)
-            .then((res) => {
-              localStorage.setItem("token", res.data.token);
-              dispatch(authActions.setCurrentUser(jwtDecode(res.data.token)));
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-          console.log(e.data);
-        } else if (e.data.name === "gamedisconnected") {
-          alert(e.data.cid);
-        }
-      };
+    window.onmessage = (e) => {
+      const elementdata: any = document.querySelector("#iframe_poolgame");
+      if (e.data.name === "gameconnected") {
+        const msg_data = {
+          name: "start_game_first",
+          currentUser: currentUser,
+          cid: window.localStorage.getItem("cid"),
+        };
+        elementdata.contentWindow.postMessage(msg_data, "*");
+      } else if (e.data.name === "gameendstatus") {
+        setTimeout(() => {
+          router.push("/challenges");
+        }, 5000);
+        axios
+          .post(`${SERVER_URI}/pool-game/end`, e.data)
+          .then((res) => {
+            localStorage.setItem("token", res.data.token);
+            dispatch(authActions.setCurrentUser(jwtDecode(res.data.token)));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        console.log(e.data);
+      } else if (e.data.name === "gamedisconnected") {
+        alert(e.data.cid);
+      }
     };
   }, []);
 
@@ -101,8 +98,8 @@ export default function GameComponent() {
           <iframe
             // src={`https://portal.bitpool.gg/?c=${cid}&u=${uid}`}
             // src={`https://pool-web-game.onrender.com/?c=${cid}&u=${uid}`}
-            // src={`http://192.168.112.89:9001`}
-            src="https://bitpool-gameserver.onrender.com"
+            src={`http://192.168.112.89:9001`}
+            // src="https://bitpool-gameserver.onrender.com"
             id="iframe_poolgame"
             className="w-full absolute top-0 left-0 h-full"
           ></iframe>
